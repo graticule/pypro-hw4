@@ -4,7 +4,8 @@ import types
 def flat_generator(list_of_list):
     for i in list_of_list:
         if type(i) == list:
-            yield flat_generator(i)
+            for j in flat_generator(i):
+                yield j
         else:
             yield i
 

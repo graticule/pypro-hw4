@@ -4,27 +4,17 @@ class FlatIterator:
         self.list_of_list = list_of_list
 
     def __iter__(self):
-        self.list_number = 0
-        self.element_number = -1
+        self.big_list = iter(self.list_of_list)
+        self.current = iter([])
         return self
 
-    def __get_next(self):
-        is_found = False
-        while not is_found and self.list_number < len(self.list_of_list):
-            self.element_number += 1
-            if self.element_number >= len(self.list_of_list[self.list_number]):
-                self.list_number += 1
-                self.element_number = -1
-            else:
-                is_found = True
-        return is_found
-
     def __next__(self):
-        if self.__get_next():
-            item = self.list_of_list[self.list_number][self.element_number]
-            return item
-        else:
-            raise StopIteration
+        while True:
+            try:
+                item = next(self.current)
+                return item
+            except StopIteration:
+                self.current = iter(next(self.big_list))
 
 
 def test_1():

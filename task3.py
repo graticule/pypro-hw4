@@ -5,38 +5,28 @@ class FlatIterator:
 
     def __iter__(self):
         self.level = 0
-        self.element_number = [-1]
+        self.current = [iter(self.list_of_list)]
         return self
 
-    def __get_element(self, indexes):
-        result = self.list_of_list
-        for i in indexes:
-            result = result[i]
-        return result
-
-    def __get_next(self):
-        is_found = False
-        while (not is_found) and self.level >= 0:
-            self.element_number[self.level] += 1
-            current_list = self.__get_element(self.element_number[:-1])
-            if self.element_number[self.level] >= len(current_list):
-                del self.element_number[self.level]
-                self.level -= 1
+    def get_next_item(self):
+        while True:
+            item = next(self.current[self.level])
+            if type(item) == list:
+                self.level += 1
+                self.current.append(iter(item))
             else:
-                current_element = self.__get_element(self.element_number)
-                if type(current_element) == list:
-                    self.level += 1
-                    self.element_number.append(-1)
-                else:
-                    is_found = True
-        return is_found
+                return item
 
     def __next__(self):
-        if self.__get_next():
-            item = self.__get_element(self.element_number)
-            return item
-        else:
-            raise StopIteration
+        while True:
+            try:
+                item = self.get_next_item()
+                return item
+            except StopIteration:
+                if self.level == 0:
+                    raise StopIteration
+                del self.current[-1]
+                self.level -= 1
 
 
 def test_3():
